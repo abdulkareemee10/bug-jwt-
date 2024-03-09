@@ -104,6 +104,7 @@ public class ForgotPasswordService {
 
                 forgotPassword.setOtpUsedTime(LocalDateTime.now());
                 forgotPassword.setIsOtpUsed(true);
+                forgotPassword.setIsPasswordChanged(false);
                 forgotPasswordRepository.save(forgotPassword);
 
                 User user = userRepository.findByEmail(forgotPasswordValidationRequest.getEmail()).get();
@@ -137,6 +138,7 @@ public class ForgotPasswordService {
 
                 existingUser.setPassword(passwordEncoder.encode(unhashedPassword));
                 forgotPassword.setIsPasswordChanged(true);
+                forgotPassword.setEmail(forgotPasswordRequest.getEmail());
                 forgotPassword.setTimePasswordChanged(LocalDateTime.now());
                 response.setResponseCode(200);
                 response.setResponseMessage("SUCCESS");

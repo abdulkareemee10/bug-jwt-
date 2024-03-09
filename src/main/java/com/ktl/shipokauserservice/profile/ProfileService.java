@@ -1,13 +1,19 @@
 package com.ktl.shipokauserservice.profile;
+import com.ktl.shipokauserservice.CustomerEnquiry.CustomerEnquiryFile;
 import com.ktl.shipokauserservice.Utils.Response;
 
+import com.ktl.shipokauserservice.businessType.BusinessType;
 import com.ktl.shipokauserservice.user.User;
 import com.ktl.shipokauserservice.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.UUID;
@@ -17,6 +23,8 @@ public class ProfileService {
 //
     @Autowired
     private UserRepository userRepository;
+
+    private final String FOLDER_PATH = "C:/Users/USER/IdeaProjects/Shipoka/profile-picture/";
 
 
 
@@ -28,30 +36,53 @@ public class ProfileService {
 
 
 
-     public Response saveProfile(ProfileValidationRequest personalValidationRequest) {
-         Response response = new Response();
+     public Response saveProfile(ProfileValidationRequest personalValidationRequest, String userId) {
+
+
+             Response response = new Response();
+
+                 User user = userRepository.findById(userId).orElseThrow(()
+                         -> new DataRetrievalFailureException("user with id not found"));
+
+
 //                   UserCategory userCat = userCategoryRepository.findByCategoryName(personalValidationRequest.getUserCategory()).get();
 //           Long userCats = userCat.getUserCategoryId();
-         User currentUser1 = userRepository.findByEmail(personalValidationRequest.getEmail()).get();
-         String currentUserID = currentUser1.getUserId();
-         User user = User.builder()
-                 .userId(currentUserID)
-                 .userCategoryId(personalValidationRequest.getUserCategoryId())
-                 .firstName(personalValidationRequest.getFirstName())
-                 .lastName(personalValidationRequest.getLastName())
-                 .phoneCountryCode(personalValidationRequest.getPhoneCountryCode())
-                 .profilePicture(personalValidationRequest.getProfilePicture())
-                 .phoneNumber(personalValidationRequest.getPhoneNumber())
-                 .contactPhoneNumber(personalValidationRequest.getContactPhoneNumber())
-                 .contactEmailAddress(personalValidationRequest.getContactEmailAddress())
-                 .contactLastName(personalValidationRequest.getContactLastName())
-                 .contactFirstName(personalValidationRequest.getContactFirstName())
-                 .contactPhoneCountryCode(personalValidationRequest.getContactPhoneCountryCode())
-                 .isPhoneNumberVerified(false)
-                 .gender(personalValidationRequest.getGender())
-                 .dateCreated(LocalDateTime.now())
-                 .build();
-         userRepository.save(user);
+                    user.setUserCategoryId(personalValidationRequest.getUserCategoryId());
+                    user.setFirstName(personalValidationRequest.getFirstName());
+                    user.setLastName(personalValidationRequest.getLastName());
+                    user.setPhoneCountryCode(personalValidationRequest.getPhoneCountryCode());
+                    user.setProfilePicture(personalValidationRequest.getProfilePicture());
+                    user.setPhoneNumber(personalValidationRequest.getPhoneNumber());
+                    user.setContactPhoneNumber(personalValidationRequest.getContactPhoneNumber());
+                    user.setContactEmailAddress(personalValidationRequest.getContactEmailAddress());
+                    user.setContactLastName(personalValidationRequest.getContactLastName());
+                    user.setContactFirstName(personalValidationRequest.getContactFirstName());
+                    user.setContactPhoneCountryCode(personalValidationRequest.getContactPhoneCountryCode());
+                    user.setIsPhoneNumberVerified(false);
+                    user.setGender(personalValidationRequest.getGender());
+                    user.setDateCreated(LocalDateTime.now());
+                    userRepository.save(user);
+
+
+
+
+//         user.builder()
+//                 .userCategoryId(personalValidationRequest.getUserCategoryId())
+//                 .firstName(personalValidationRequest.getFirstName())
+//                 .lastName(personalValidationRequest.getLastName())
+//                 .phoneCountryCode(personalValidationRequest.getPhoneCountryCode())
+//                 .profilePicture(personalValidationRequest.getProfilePicture())
+//                 .phoneNumber(personalValidationRequest.getPhoneNumber())
+//                 .contactPhoneNumber(personalValidationRequest.getContactPhoneNumber())
+//                 .contactEmailAddress(personalValidationRequest.getContactEmailAddress())
+//                 .contactLastName(personalValidationRequest.getContactLastName())
+//                 .contactFirstName(personalValidationRequest.getContactFirstName())
+//                 .contactPhoneCountryCode(personalValidationRequest.getContactPhoneCountryCode())
+//                 .isPhoneNumberVerified(false)
+//                 .gender(personalValidationRequest.getGender())
+//                 .dateCreated(LocalDateTime.now())
+//                 .build();
+//         userRepository.save(user);
        try {
            if (userRepository.save(user) != null) {
 
@@ -79,10 +110,10 @@ Response response= new Response();
              user.setPin(passwordEncoder.encode(unhashedPassword));
              userRepository.save(user);
          response.setResponseCode(0);
-         response.setResponseMessage("pin changed successfully");
+         response.setResponseMessage("pin created successfully");
      } else {
          response.setResponseCode(-1);
-         response.setResponseMessage("Problem changing pin");
+         response.setResponseMessage("Problem creating pin");
      }
      } catch (Exception e) {
          response.setResponseCode(-2);
@@ -120,5 +151,25 @@ Response response= new Response();
 
          return response;
 }
+    public String profilePicture(MultipartFile file, String userId) throws IOException {
+        String filePath = FOLDER_PATH+ "/" + userId+file.getOriginalFilename();
+        User user = userRepository.findByUserId(userId).get();
+               user.setProfilePicture(filePath);
+               userRepository.save(user);
+
+        file.transferTo(new File(filePath));
+        if( user != null){
+            return "file uploaded successfully" + filePath;
+        }else
+            return "problem uploading file";
+
+    }
+
+    public byte[] downloadProfilePicture(String fileName) throws IOException {
+        User user = userRepository.findByProfilePicture(fileName).get();
+        String filePath = user.getProfilePicture();
+        byte[] uploadedFile = Files.readAllBytes(new File(filePath).toPath());
+        return uploadedFile;
+    }
 }
 

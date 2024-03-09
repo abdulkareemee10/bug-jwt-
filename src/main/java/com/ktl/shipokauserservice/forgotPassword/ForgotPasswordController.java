@@ -64,7 +64,7 @@ public class ForgotPasswordController {
             description = "returns password changed successfully",
             content = @Content(mediaType = "application/json")
     )
-    public ResponseEntity<Response> changePassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest, @PathVariable("userId") String userId) {
+    public ResponseEntity<Response> changePassword(@PathVariable("userId") String userId, @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
 
         try {
             return new ResponseEntity<>(forgotPasswordService.changePassword(forgotPasswordRequest, userId), HttpStatus.OK);

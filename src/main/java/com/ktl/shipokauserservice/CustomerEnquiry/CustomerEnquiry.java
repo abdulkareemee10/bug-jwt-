@@ -17,23 +17,43 @@ import java.time.LocalDateTime;
 public class CustomerEnquiry {
     @Id
     private String customerEnquiryId;
-    private String enquiryId;
+
+    private String enquiryFileId;
+
     private String customerId;
-    private String EnquiryTypeId;
+
+    private String enquiryTypeId;
+
     private String firstName;
+
     private String lastName;
+
+    private String middleName;
+
     private String email;
+
     private String phoneNumber;
+
     private String subject;
+
     private String message;
+
     private Boolean isRegisteredCustomer;
+
     private String enquiryStatus;
+
     private LocalDateTime dateCreated;
+
     private LocalDateTime dateUpdated;
+
     private String createdBy;
+
     private String updatedBy;
+
     private LocalDateTime dateVoided;
+
     private String voidedBy;
+
     private Boolean voided;
 
 }

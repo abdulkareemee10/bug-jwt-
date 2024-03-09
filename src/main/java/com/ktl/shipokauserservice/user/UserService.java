@@ -33,6 +33,7 @@ public class UserService {
     public ResponseEntity<Response> signUp(UserRequest userRequest) {
         //if the user exists - return error
         try {
+
             if (userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
                 return ResponseEntity.badRequest().body(Response.builder()
                         .responseCode(400)

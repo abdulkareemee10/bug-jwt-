@@ -24,8 +24,7 @@ public class ForgotPassword {
     private String verificationCode;
     private Boolean isPasswordChanged;
     private Boolean isOtpUsed;
-    private LocalDateTime timeOtpChanged;
-    private LocalDateTime timeOtpCreated;
+   private LocalDateTime timeOtpCreated;
     private Boolean isOtpExpired;
     private LocalDateTime otpUsedTime;
     private LocalDateTime timePasswordChanged;

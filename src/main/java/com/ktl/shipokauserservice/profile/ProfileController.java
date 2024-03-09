@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Tag(name = "Profile", description = "user profile APIs for both personal and business users")
 @RestController
@@ -25,7 +28,7 @@ public class ProfileController {
 //        return new ResponseEntity<>("saved", HttpStatus.OK);
 //
 //    }
-    @PostMapping("/post")
+    @PostMapping("/post/{userId}")
     @Operation(
             operationId = "saveUserProfile",
             summary = "save user profile",
@@ -36,10 +39,10 @@ public class ProfileController {
             description = "returns user profile saved successfully",
             content = @Content(mediaType = "application/json")
     )
-    public ResponseEntity<Response> saveProfile(@RequestBody ProfileValidationRequest personalValidationRequest) {
+    public ResponseEntity<Response> saveProfile( @PathVariable("userId") String userId, @RequestBody ProfileValidationRequest personalValidationRequest) {
 
         try {
-            return new ResponseEntity<>(profileService.saveProfile(personalValidationRequest), HttpStatus.CREATED);
+            return new ResponseEntity<>(profileService.saveProfile(personalValidationRequest, userId), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -85,5 +88,40 @@ public class ProfileController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping("/postPicture/{userId}")
+    @Operation(
+            operationId = "saveProfilePicture",
+            summary = "save user profile picture",
+            description = "this endpoint will be used to save user profile picture"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "returns profile picture saved successfully ",
+            content = @Content(mediaType = "application/json")
+    )
+    public ResponseEntity<?> uploadProfilePicture( @PathVariable("userId") String userId, @RequestParam("file") MultipartFile file) throws IOException {
+        String uploadedPicture = profileService.profilePicture(file, userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(uploadedPicture);
+    }
+    @GetMapping("/download/{fileName}")
+    @Operation(
+            operationId = "getUploadedProfilePicture ",
+            summary = "get uploaded profile picture from user",
+            description = "this endpoint will be used to get the profile picture uploaded by user"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "returns profile picture uploaded by customer",
+            content = @Content(mediaType = "application/json")
+    )
+
+
+    public ResponseEntity<?> downloadProfilePicture(@PathVariable String fileName) throws IOException {
+        byte[] downloadedPicture = profileService.downloadProfilePicture(fileName);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(downloadedPicture);
     }
 }

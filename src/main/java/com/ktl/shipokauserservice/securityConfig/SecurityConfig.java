@@ -20,6 +20,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
@@ -37,13 +39,15 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "api/v1/authenticate/signUp").permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/otp/send").permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/profile/setPin/{id}").permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/v1/profile/postPicture/{userId}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "api/v1/profile/download/{fileName}").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "api/v1/profile/changePhone/{id}").permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/forgotPassword/sendOtpForgotPassword").permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/forgotPassword/validateOtpForgotPassword").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "api/v1/forgotPassword/changePassword/{userId}").permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/otp/validateOtp").permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/userCategory/add").permitAll()
-                                .requestMatchers(HttpMethod.POST, "api/v1/profile/post").permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/v1/profile/post/{id}").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "api/v1/profile/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "api/v1/userCategory/get").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "api/v1/userCategory/{id}").permitAll()
@@ -54,9 +58,15 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "api/v1/businessType/{id}").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "api/v1/businessType/{id}").permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/employeeSize/post").permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/v1/appReview/post").permitAll()
                                 .requestMatchers(HttpMethod.GET, "api/v1/employeeSize/get").permitAll()
+                                .requestMatchers(HttpMethod.GET, "api/login-details").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "api/v1/employeeSize/{id}").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "api/v1/employeeSize/{id}").permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/v1/customerEnquiryFile/post/{userId}").permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/v1/customerEnquiryTicketMessage/post").permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/v1/customerEnquiry/post").permitAll()
+                                .requestMatchers(HttpMethod.GET, "api/v1/customerEnquiryTicketMessage/get/{customerEnquiryId}").permitAll()
                                 .anyRequest().authenticated()
                         );
         return httpSecurity.build();
